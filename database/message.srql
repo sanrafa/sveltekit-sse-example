@@ -1,0 +1,11 @@
+REMOVE TABLE message;
+
+DEFINE TABLE message SCHEMAFULL;
+
+DEFINE FIELD created_at ON TABLE message TYPE datetime VALUE $value OR time::now() ASSERT $value != NONE;
+
+DEFINE FIELD user ON TABLE message TYPE string ASSERT $value != NONE;
+
+DEFINE FIELD text ON TABLE message TYPE string ASSERT $value != NONE;
+
+DEFINE FIELD room ON TABLE message TYPE string ASSERT $value INSIDE ["room1", "room2"];
