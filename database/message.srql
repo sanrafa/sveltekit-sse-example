@@ -1,3 +1,5 @@
+DEFINE TABLE test SCHEMALESS;
+
 REMOVE TABLE message;
 
 DEFINE TABLE message SCHEMAFULL;
@@ -9,3 +11,17 @@ DEFINE FIELD user ON TABLE message TYPE string ASSERT $value != NONE;
 DEFINE FIELD text ON TABLE message TYPE string ASSERT $value != NONE;
 
 DEFINE FIELD room ON TABLE message TYPE string ASSERT $value INSIDE ["room1", "room2"];
+
+DEFINE EVENT message_added ON TABLE message WHEN $event = 'CREATE' THEN {
+    LET $room = $after.room;
+    LET $url = string::concat('http://localhost:5173/rooms/', $room, '/activity');
+    LET $resp = http::post($url, {
+        "id": $after.id,
+        "user": $after.user,
+        "room": $room,
+        "text": $after.text
+    });
+    IF $resp.ok = true  THEN 
+        CREATE test SET message = $after.text
+    END;
+};

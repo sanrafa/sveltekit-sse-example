@@ -22,10 +22,12 @@ try {
     const filePath = path.resolve();
 
     const script = await fs.readFile(`${filePath}/database/message.srql`, { encoding: "utf8" });
-    const queries = script.split("\n\n").map(q => ({
+    const scriptArray = script.split("\n\n");
+    const queries = scriptArray.map(q => ({
         query: query(q),
         schema: z.any()
     }));
+    console.log(scriptArray);
     console.log("Creating MESSAGE table---");
     await client.transaction(...queries);
     console.log("MESSAGE table created.");

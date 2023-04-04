@@ -35,7 +35,7 @@ export const actions = {
             const parsed = MessageSubmission.parse(chatObj);
             await client.execute({
                 query: create('message').content(parsed).return("after"),
-                schema: z.any()
+                schema: Message
             });
         } catch (error) {
             console.error(error);
