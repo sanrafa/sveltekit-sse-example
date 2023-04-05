@@ -8,11 +8,11 @@ DEFINE FIELD created_at ON TABLE message TYPE datetime VALUE $value OR time::now
 
 DEFINE FIELD user ON TABLE message TYPE string ASSERT $value != NONE;
 
-DEFINE FIELD text ON TABLE message TYPE string ASSERT $value != NONE;
+DEFINE FIELD text ON TABLE message TYPE string ASSERT $value != NONE AND string::len($value) > 0;
 
 DEFINE FIELD room ON TABLE message TYPE string ASSERT $value INSIDE ["room1", "room2"];
 
-DEFINE EVENT message_added ON TABLE message WHEN $event = 'CREATE' THEN {
+/* DEFINE EVENT message_added ON TABLE message WHEN $event = 'CREATE' THEN {
     LET $room = $after.room;
     LET $url = string::concat('http://localhost:5173/rooms/', $room, '/activity');
     LET $resp = http::post($url, {
@@ -24,4 +24,4 @@ DEFINE EVENT message_added ON TABLE message WHEN $event = 'CREATE' THEN {
     IF $resp.ok = true  THEN 
         CREATE test SET message = $after.text
     END;
-};
+}; */

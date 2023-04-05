@@ -7,6 +7,19 @@ import { z } from "zod";
 const { DB_USER, DB_PASS } = process.env;
 invariant(DB_USER && DB_PASS);
 
+async function setupQueries(filename: string) {
+    const filePath = `${path.resolve()}/database/${filename}.srql`;
+    const script = await fs.readFile(filePath, { encoding: "utf8" });
+    const commentRegex = /\/\*[\s\S]*?\*\//sg;
+    const sanitized = script.replace(commentRegex, '');
+    const scriptArray = sanitized.split("\n\n").filter(val => !!val);
+    const queries = scriptArray.map(q => ({
+        query: query(q),
+        schema: z.any()
+    }));
+    return queries;
+}
+
 try {
     const client = new CirqlStateless({
         connection: {
@@ -19,15 +32,7 @@ try {
             pass: DB_PASS
         }
     });
-    const filePath = path.resolve();
-
-    const script = await fs.readFile(`${filePath}/database/message.srql`, { encoding: "utf8" });
-    const scriptArray = script.split("\n\n");
-    const queries = scriptArray.map(q => ({
-        query: query(q),
-        schema: z.any()
-    }));
-    console.log(scriptArray);
+    const queries = await setupQueries("message");
     console.log("Creating MESSAGE table---");
     await client.transaction(...queries);
     console.log("MESSAGE table created.");
