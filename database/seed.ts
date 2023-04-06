@@ -8,7 +8,7 @@ const { DB_USER, DB_PASS, DB_URL, DB_NS, DB_DB } = process.env;
 invariant(DB_USER && DB_PASS && DB_URL && DB_NS && DB_DB, "Database env variables required, see .env.example.");
 
 async function setupQueries(filename: string) {
-    const filePath = `${path.resolve()}/database/${filename}.srql`;
+    const filePath = path.normalize(path.resolve(`./database/${filename}.srql`));
     const script = await fs.readFile(filePath, { encoding: "utf8" });
     const commentRegex = /\/\*[\s\S]*?\*\//sg;
     const sanitized = script.replace(commentRegex, '');
