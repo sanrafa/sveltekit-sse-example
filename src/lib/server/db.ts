@@ -1,14 +1,13 @@
-import { Cirql, RecordSchema } from "cirql";
+import { Cirql } from "cirql";
 import { env } from "$env/dynamic/private";
-import { z } from "zod";
 
-const { DB_USER, DB_PASS } = env;
+const { DB_USER, DB_PASS, DB_URL, DB_NS, DB_DB } = env;
 
 const client = new Cirql({
     connection: {
-        endpoint: "http://localhost:8000",
-        namespace: "test",
-        database: "test"
+        endpoint: DB_URL,
+        namespace: DB_NS,
+        database: DB_DB
     },
     credentials: {
         user: DB_USER,

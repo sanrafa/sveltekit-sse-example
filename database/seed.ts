@@ -4,8 +4,8 @@ import invariant from "tiny-invariant";
 import { CirqlStateless, query } from "cirql";
 import { z } from "zod";
 
-const { DB_USER, DB_PASS } = process.env;
-invariant(DB_USER && DB_PASS);
+const { DB_USER, DB_PASS, DB_URL, DB_NS, DB_DB } = process.env;
+invariant(DB_USER && DB_PASS && DB_URL && DB_NS && DB_DB, "Database env variables required, see .env.example.");
 
 async function setupQueries(filename: string) {
     const filePath = `${path.resolve()}/database/${filename}.srql`;
@@ -23,9 +23,9 @@ async function setupQueries(filename: string) {
 try {
     const client = new CirqlStateless({
         connection: {
-            endpoint: "http://localhost:8000",
-            namespace: "test",
-            database: "test"
+            endpoint: DB_URL,
+            namespace: DB_NS,
+            database: DB_DB
         },
         credentials: {
             user: DB_USER,
