@@ -17,3 +17,11 @@ The database used is [SurrealDB](https://surrealdb.com/) with the impressive [Ci
 4. `npm run seed`
 5. `npm run dev`
 6. The app should be running on port 5173
+
+## Suggestions?
+
+If you have any feedback, questions, dark secrets, etc., please submit an issue or PR!
+
+## License
+
+MIT
