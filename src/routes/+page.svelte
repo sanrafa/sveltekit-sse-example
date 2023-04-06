@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { IMessage } from "$lib/schemas";
+  import { SSEvents, type IMessage } from "$lib/schemas";
   import { writable } from "svelte/store";
 
   const recentMsg = writable<IMessage>();
@@ -8,7 +8,7 @@
   onMount(() => {
     const source = new EventSource("/rooms/activity");
 
-    source.addEventListener("chat_sent", (event) => {
+    source.addEventListener(SSEvents.general, (event) => {
       const message = JSON.parse(event.data);
       recentMsg.update(() => message);
     });

@@ -23,12 +23,11 @@ export function createSSE(retry = 0) {
         readable,
         async subscribeToEvent(emitter: EventEmitter, event: string) {
             function listener(data: any) {
-                console.log(`Event ${event} emitted:`, JSON.stringify(data));
                 writer.write({ event, data });
             }
             emitter.on(event, listener);
             await writer.closed.catch((e) => {
-                console.error(e);
+                if (e) console.error(e);
             });
             emitter.off(event, listener);
         }

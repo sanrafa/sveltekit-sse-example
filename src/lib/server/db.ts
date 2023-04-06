@@ -20,12 +20,3 @@ await client.ready();
 
 export default client;
 
-export const Message = RecordSchema.extend({
-    created_at: z.string(),
-    user: z.string(),
-    text: z.string().min(1, "A message is required."),
-    room: z.string().refine((val) => ["room1", "room2"].includes(val))
-});
-
-
-export const MessageSubmission = Message.omit({ created_at: true, id: true });

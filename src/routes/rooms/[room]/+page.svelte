@@ -4,13 +4,14 @@
   import { enhance } from "$app/forms";
   import { page } from "$app/stores";
   import type { ActionData } from "./$types";
-  import type { IMessage } from "$lib/schemas";
+  import { SSEvents, type IMessage } from "$lib/schemas";
 
   export let form: ActionData;
   export let data;
   const {
     room: { messages, title },
   } = data;
+
   const messageStore = writable<IMessage[]>(messages);
   const user = getContext<Writable<string>>("user");
 
@@ -18,8 +19,10 @@
     const source = new EventSource(`${$page.url}/activity`, {
       withCredentials: false,
     });
-    source.addEventListener(`${$page.params?.room}_chat_sent`, (event) => {
-      const message = JSON.parse(event.data);
+    const room = messages[0].room;
+    const event = SSEvents[room];
+    source.addEventListener(event, (e) => {
+      const message = JSON.parse(e.data);
       messageStore.update((v) => [...v, message]);
     });
     return () => {

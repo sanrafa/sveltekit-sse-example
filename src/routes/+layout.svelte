@@ -3,15 +3,15 @@
   import { setContext } from "svelte";
   import { writable } from "svelte/store";
 
-  export let data;
-  let uid = data.user;
+  let uid: string;
 
   if (browser) {
     const userId = localStorage.getItem("userid");
     if (userId) {
       uid = userId;
     } else {
-      localStorage.setItem("userid", data.user);
+      uid = crypto.randomUUID();
+      localStorage.setItem("userid", uid);
     }
   }
 
@@ -22,7 +22,7 @@
 </script>
 
 <header>
-  <p>USER ID: {$user}</p>
+  <p>USER ID: {$user ?? ""}</p>
   <a href="/">GO HOME</a>
 </header>
 <slot />

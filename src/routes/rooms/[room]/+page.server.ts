@@ -1,13 +1,15 @@
-import client, { Message, MessageSubmission } from "$lib/server/db";
+import client from "$lib/server/db";
+import { Message, MessageSubmission, SSEvents } from "$lib/schemas";
 import { chatEmitter } from "$lib/server/emitters";
 import { select, create } from "cirql";
 import type { PageServerLoad, Actions } from "./$types";
 import { error, fail } from "@sveltejs/kit";
-import { ZodError, z } from "zod";
+import { ZodError } from "zod";
 
 export const load = (async ({ params }) => {
     const { room: roomId } = params;
-    if (!["room1", "room2"].includes(roomId)) throw error(404, 'Not found');
+    const isRoute = Message.pick({ room: true }).safeParse(params);
+    if (!isRoute.success) throw error(404, 'Not found');
     const title = roomId === "room1" ? "Room 1" : "Room 2";
     const messages = await client.execute({
         query: select().from('message').where({ room: roomId }),
@@ -38,9 +40,9 @@ export const actions = {
                 schema: Message
             });
             if (message) {
-                const room = message.room;
-                chatEmitter.emit('chat_sent', message);
-                chatEmitter.emit(`${room}_chat_sent`, message);
+                const roomEvent = SSEvents[message.room];
+                chatEmitter.emit(SSEvents.general, message);
+                chatEmitter.emit(roomEvent, message);
             }
         } catch (error) {
             if (error instanceof ZodError) {
