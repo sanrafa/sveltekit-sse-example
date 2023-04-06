@@ -9,7 +9,7 @@ import { ZodError } from "zod";
 export const load = (async ({ params }) => {
     const { room: roomId } = params;
     const isRoute = Message.pick({ room: true }).safeParse(params);
-    if (!isRoute.success) throw error(404, 'Not found');
+    if (!isRoute.success) throw error(404, 'There be dragons...');
     const title = roomId === "room1" ? "Room 1" : "Room 2";
     const messages = await client.execute({
         query: select().from('message').where({ room: roomId }),
