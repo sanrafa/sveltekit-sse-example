@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { SSEvents, type IMessage } from "$lib/schemas";
   import { writable } from "svelte/store";
-  import { fade, scale } from "svelte/transition";
+  import { scale } from "svelte/transition";
 
   const recentMsg = writable<IMessage>();
 
