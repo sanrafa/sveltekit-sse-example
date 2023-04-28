@@ -1,20 +1,17 @@
-import client from "$lib/server/db";
-import { Message, MessageSubmission, SSEvents } from "$lib/schemas";
+import chats from "$lib/server/state";
+import { Message, MessageSubmission, SSEvents, type IMessage } from "$lib/schemas";
 import { chatEmitter } from "$lib/server/emitters";
-import { select, create } from "cirql";
 import type { PageServerLoad, Actions } from "./$types";
 import { error, fail } from "@sveltejs/kit";
 import { ZodError } from "zod";
+import { randomUUID } from "crypto";
 
 export const load = (async ({ params }) => {
     const { room: roomId } = params;
     const isRoute = Message.pick({ room: true }).safeParse(params);
     if (!isRoute.success) throw error(404, 'There be dragons...');
     const title = roomId === "room1" ? "Room 1" : "Room 2";
-    const messages = await client.execute({
-        query: select().from('message').where({ room: roomId }),
-        schema: Message
-    });
+    const messages = Array.from(chats).filter(chat => chat.room === roomId);
     return {
         room: {
             id: roomId,
@@ -35,15 +32,15 @@ export const actions = {
                 user: formData.get('user')
             };
             const parsed = MessageSubmission.parse(chatObj);
-            const message = await client.execute({
-                query: create('message').content(parsed).return("after"),
-                schema: Message
-            });
-            if (message) {
-                const roomEvent = SSEvents[message.room];
-                chatEmitter.emit(SSEvents.general, message);
-                chatEmitter.emit(roomEvent, message);
-            }
+            const id = randomUUID();
+            const message: IMessage = { id, created_at: Date.now(), ...parsed };
+
+            chats.add(message);
+
+            const roomEvent = SSEvents[message.room];
+            chatEmitter.emit(SSEvents.general, message);
+            chatEmitter.emit(roomEvent, message);
+
         } catch (error) {
             if (error instanceof ZodError) {
                 const textError = error.issues.find(iss => iss.path.includes("text"));

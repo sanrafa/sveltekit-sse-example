@@ -1,5 +1,5 @@
 {
-  "name": "sse-chat",
+  "name": "sveltekit-sse-example",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,8 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "seed": "ts-node -r dotenv/config  --esm ./database/seed.ts"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^2.0.0",
@@ -22,7 +21,6 @@
   },
   "type": "module",
   "dependencies": {
-    "cirql": "^0.7.5",
     "dotenv": "^16.0.3",
     "tiny-invariant": "^1.3.1",
     "zod": "^3.21.4"

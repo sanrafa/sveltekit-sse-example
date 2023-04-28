@@ -9,7 +9,7 @@
   export let form: ActionData;
   export let data;
   const {
-    room: { messages, title },
+    room: { messages, title, id: roomId },
   } = data;
 
   const messageStore = writable<IMessage[]>(messages);
@@ -19,8 +19,7 @@
     const source = new EventSource(`${$page.url}/activity`, {
       withCredentials: false,
     });
-    const room = messages[0].room;
-    const event = SSEvents[room];
+    const event = SSEvents[roomId as keyof typeof SSEvents];
     source.addEventListener(event, (e) => {
       const message = JSON.parse(e.data);
       messageStore.update((v) => [...v, message]);
@@ -54,7 +53,7 @@
 <div class="msg_box">
   {#if $messageStore.length > 0}
     <ul>
-      {#each [...$messageStore].sort((a, z) => -1 * a.created_at.localeCompare(z.created_at)) as msg}
+      {#each [...$messageStore].sort((a, z) => z.created_at - a.created_at) as msg}
         <li>
           <div class="msg">
             <span

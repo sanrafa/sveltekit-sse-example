@@ -1,8 +1,8 @@
-import { RecordSchema } from "cirql";
 import { z } from "zod";
 
-export const Message = RecordSchema.extend({
-    created_at: z.string(),
+export const Message = z.object({
+    id: z.string(),
+    created_at: z.number(),
     user: z.string(),
     text: z.string().min(1, "A message is required."),
     room: z.enum(["room1", "room2"])
